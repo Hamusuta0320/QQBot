@@ -1,0 +1,72 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.1.1'
+    id 'org.jetbrains.kotlin.jvm' version '1.7.0'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.7.0'
+}
+
+group 'com.cxj'
+version '1.0-SNAPSHOT'
+
+repositories {
+//    mavenCentral()
+    maven {
+        url 'https://maven.aliyun.com/nexus/content/groups/public'
+    }
+    mavenCentral()
+}
+
+dependencies {
+    implementation(project(":ego"))
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.4.1'
+    implementation 'com.google.code.gson:gson:2.10'
+    implementation 'org.apache.logging.log4j:log4j-core:2.19.0'
+    implementation 'org.springframework:spring-context:5.3.23'
+    implementation 'net.jodah:expiringmap:0.5.10'
+    implementation 'redis.clients:jedis:4.3.1'
+    implementation 'org.xerial:sqlite-jdbc:3.39.3.0'
+    implementation 'net.mamoe:mirai-core:2.12.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+shadowJar {
+    manifest {
+        attributes(
+                // 运行主类的全称类名
+                'Main-Class': 'com.cxj.AppKt'
+        )
+    }
+    zip64 true
+
+    archiveClassifier.set('')
+    // 打包后的jar包文件名
+    archiveBaseName.set('qq-bot')
+    archiveVersion.set('1.0.0')
+
+}
+
+// 未指明主类
+shadowJar {
+    mergeServiceFiles()
+    zip64 true
+
+    archiveClassifier.set('')
+    archiveBaseName.set('qq-bot')//指定jar名字
+    archiveVersion.set('')
+
+    // 打包时排除指定的 jar 包
+//    dependencies {
+//        exclude(dependency('com.google.code.findbugs:jsr305'))
+//    }
+
+    // 将 build.gradle 打入到 jar 中, 方便查看依赖包版本
+    from("./") {
+        include 'build.gradle'
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
